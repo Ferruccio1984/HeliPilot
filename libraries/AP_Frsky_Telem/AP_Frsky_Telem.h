@@ -43,6 +43,7 @@ for FrSky D protocol (D-receivers)
 #define DATA_ID_GPS_LAT_NS          0x23
 #define DATA_ID_CURRENT             0x28
 #define DATA_ID_VFAS                0x39
+//#define DATA_ID_RPM                 0x050F
 
 #define START_STOP_D                0x5E
 #define BYTESTUFF_D                 0x5D
@@ -54,6 +55,7 @@ for FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
 #define SENSOR_ID_VARIO             0x00 // Sensor ID  0
 #define SENSOR_ID_FAS               0x22 // Sensor ID  2
 #define SENSOR_ID_GPS               0x83 // Sensor ID  3
+//#define SENSOR_ID_RPM               0xE4 // Sensor ID  4
 #define SENSOR_ID_SP2UR             0xC6 // Sensor ID  6
 #define SENSOR_ID_28                0x1B // Sensor ID 28
 
@@ -249,4 +251,5 @@ private:
     void calc_nav_alt(void);
     float format_gps(float dec);
     void calc_gps_position(void);
+//    uint32_t calc_rpm(void);
 };

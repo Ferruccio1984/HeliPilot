@@ -32,6 +32,7 @@
 #include <AP_Common/Location.h>
 #include <AP_GPS/AP_GPS.h>
 #include <AP_Logger/AP_Logger.h>
+// #include <AP_RPM/AP_RPM.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -284,6 +285,7 @@ void AP_Frsky_Telem::send_SPort(void)
             }
         } else {
             const AP_BattMonitor &_battery = AP::battery();
+//            const AP_RPM *_rpm_sensor = AP::rpm();
             switch(readbyte) {
                 case SENSOR_ID_FAS:
                     switch (_SPort.fas_call) {
@@ -303,6 +305,9 @@ void AP_Frsky_Telem::send_SPort(void)
                                 break;
                             }                        
                             break;
+//                        case 3:
+//                            send_uint32(SPORT_DATA_FRAME, DATA_ID_RPM, calc_rpm()); // send rpm from rpm library
+//                            break;
                     }
                     if (_SPort.fas_call++ > 2) _SPort.fas_call = 0;
                     break;
@@ -384,6 +389,7 @@ void AP_Frsky_Telem::send_D(void)
 {
     const AP_AHRS &_ahrs = AP::ahrs();
     const AP_BattMonitor &_battery = AP::battery();
+//    const AP_RPM *_rpm_sensor = AP::rpm();
 
     uint32_t now = AP_HAL::millis();
     // send frame1 every 200ms
@@ -401,6 +407,7 @@ void AP_Frsky_Telem::send_D(void)
         calc_nav_alt();
         send_uint16(DATA_ID_BARO_ALT_BP, _gps.alt_nav_meters); // send nav altitude integer part
         send_uint16(DATA_ID_BARO_ALT_AP, _gps.alt_nav_cm); // send nav altitude decimal part
+//        send_uint16(DATA_ID_RPM, calc_rpm()); // send rpm from rpm library
     }
     // send frame2 every second
     if (now - _D.last_1000ms_frame >= 1000) {
@@ -1070,3 +1077,14 @@ uint32_t AP_Frsky_Telem::sensor_status_flags() const
 
     return ~health & enabled & present;
 }
+
+/*
+ * prepare heli power data (helicopters only for HeliPilot)
+ * for FrSky D and SPort protocols
+ */
+//uint32_t AP_Frsky_Telem::calc_rpm(void)
+//{
+//    uint16_t rpm = 0;
+//    rpm = (uint16_t)roundf(_rpm_sensor.get_rpm(0));   
+//    return rpm;
+//}
