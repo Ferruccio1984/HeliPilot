@@ -14,7 +14,19 @@ public:
     bool give();
     bool take(uint32_t timeout_ms);
     bool take_nonblocking();
-private:
+protected:
     pthread_mutex_t _lock;
+};
+
+// a recursive semaphore, allowing for a thread to take it more than
+// once. It must be released the same number of times it is taken
+class PX4::Semaphore_Recursive : public PX4::Semaphore {
+public:
+    Semaphore_Recursive();
+    bool give() override;
+    bool take(uint32_t timeout_ms) override;
+    bool take_nonblocking() override;
+private:
+    uint32_t count;
 };
 #endif // CONFIG_HAL_BOARD
