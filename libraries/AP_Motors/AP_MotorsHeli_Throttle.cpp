@@ -88,6 +88,9 @@ void AP_MotorsHeli_Throttle::output(EngineControlState state)
             // throttle control output forced to zero
             _throttle_output = 0.0f;
             _throttle2_output = 0.0f;
+			
+			//unlocks turbine start-up 
+			_starting = true;
             break;
 
         case ENGINE_CONTROL_IDLE:
@@ -95,8 +98,22 @@ void AP_MotorsHeli_Throttle::output(EngineControlState state)
             update_throttle_ramp(0.0f, dt);
 
             // set throttle control to idle speed parameter, this happens instantly and ignore ramping
-            _throttle_output = _idle_output;
+		  if (_control_mode == THROTTLE_CONTROL_TURBINE) {
+			  if (_turbine_start && _starting == true ) {			
+			    _throttle_output += 0.001f;
+			
+			         if(_throttle_output >= 1.0f) {
+						_throttle_output = _idle_output;
+						gcs().send_text(MAV_SEVERITY_INFO, "Turbine startup");
+				       _starting = false;
+				           }
+                  } else{
+			    _throttle_output = _idle_output;			 
+			   } 	 
+            }else{
+			_throttle_output = _idle_output;		
             _throttle2_output = _idle_output;
+			}
             break;
 
         case ENGINE_CONTROL_AUTOTHROTTLE:
@@ -104,7 +121,7 @@ void AP_MotorsHeli_Throttle::output(EngineControlState state)
             update_throttle_ramp(1.0f, dt);
 
             // single-engine throttle controls
-            if (_control_mode == THROTTLE_CONTROL_SINGLE) {
+            if (_control_mode == THROTTLE_CONTROL_SINGLE || _control_mode == THROTTLE_CONTROL_TURBINE ) {
                 engine_1_autothrottle_run();
 
             // twin-engine throttle controls
@@ -252,7 +269,7 @@ void AP_MotorsHeli_Throttle::engine_1_autothrottle_run()
 
         // AutoThrottle OFF if RC8 input less than throttle curve position
         // we don't use rotor_ramp_output on manual throttle
-        if (_throttle_input < throttlecurve) {
+        if (_throttle_input < throttlecurve && _control_mode != THROTTLE_CONTROL_TURBINE) {
             _autothrottle_on = false;
             _throttle_output = constrain_float((_idle_output + (_throttle_input - _idle_output)), 0.0f, 1.0f);
         } else {
@@ -266,7 +283,7 @@ void AP_MotorsHeli_Throttle::engine_1_autothrottle_run()
         // GOVERNOR ON - governor can never be active unless system is on AutoThrottle
         // but manual throttle position can override AutoThrottle allowing in-flight shutdown of either engine
         // while governor is still active on the other engine
-        if (_throttle_input < throttlecurve) {
+        if (_throttle_input < throttlecurve && _control_mode != THROTTLE_CONTROL_TURBINE) {
             _governor_output = 0.0f;
             _governor_engage = false;
             _throttle_torque_reference = 0.0f;

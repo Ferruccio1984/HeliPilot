@@ -577,6 +577,7 @@ private:
     // Tradheli flags
     typedef struct {
         uint8_t dynamic_flight          : 1;    // 0   // true if we are moving at a significant speed (used to turn on/off leaky I terms)
+		uint8_t start_turb             :1;    //3  //true for turbine start initialisation
         uint8_t governor_on             : 1;    // 2   // true for helicopter governor
     } heli_flags_t;
     heli_flags_t heli_flags;

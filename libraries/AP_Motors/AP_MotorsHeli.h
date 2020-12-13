@@ -68,6 +68,8 @@ public:
     //
     // heli specific methods
     //
+	//set_turb_start - enables turbine startup sequence
+	void set_turb_start(bool turb_start) { _heliflags.start_turb = turb_start; }
 
     // parameter_check - returns true if helicopter specific parameters are sensible, used for pre-arm check
     virtual bool parameter_check(bool display_msg) const;
@@ -185,6 +187,7 @@ protected:
         uint8_t rotor_runup_complete    : 1;      // true if the rotors have had enough time to wind up
         uint8_t governor_on             : 1;      // true for governor on
         uint8_t init_targets_on_arming  : 1;      // 0 if targets were initialized, 1 if targets were not initialized after arming
+		uint8_t start_turb                  : 1;   //true for startup sequence
     } _heliflags;
 
     // parameters

@@ -16,7 +16,9 @@ enum EngineControlState {
 enum ThrottleControl {
     THROTTLE_CONTROL_DISABLED = 0,
     THROTTLE_CONTROL_SINGLE,
-    THROTTLE_CONTROL_TWIN
+    THROTTLE_CONTROL_TWIN,
+	THROTTLE_CONTROL_TURBINE
+	
 };
 
 class AP_MotorsHeli_Throttle {
@@ -104,6 +106,9 @@ public:
     // calculate autothrottle output
     void        engine_1_autothrottle_run();
     void        engine_2_autothrottle_run();
+	
+	// turbine start initialize sequence
+	void        set_turbine_start(bool turbine_start) {_turbine_start = (bool)turbine_start; }
 
 private:
     uint64_t        _last_update_us;
@@ -149,6 +154,8 @@ private:
     float           _governor_tcgain;             // governor throttle curve gain, engine #1
     float           _governor2_tcgain;            // governor throttle curve gain, engine #2
     float           _governor_fault_timer;        // timer variable used to trigger a governor fault
+	bool           _turbine_start;
+	bool           _starting;
 
     // update_throttle_ramp - slews output scalar between 0 and 1, outputs float scalar to _throttle_ramp_output
     void            update_throttle_ramp(float throttle_ramp_input, float dt);
